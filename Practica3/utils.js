@@ -2,4 +2,4 @@ function restar(a, b) {
     return a - b;
 }
 
-MediaSourceHandle.export = { restar };
+module.exports = { restar };

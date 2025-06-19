@@ -1,47 +1,47 @@
-/* Zona 1: lugar de las importaciones*/
+/* ZONA 1: Importaciones */
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
-import React, {act, useState} from 'react';
-
-const Texto = ({style, contenido}) => {
-  return (
-    <Text style={[styles.text,style]}>{contenido}</Text>
-  );
-}
+import { StyleSheet, Text, View, Button, Alert, ScrollView, Touchable, TouchableOpacity, TouchableHighlight, TouchableNativeFeedback, Pressable, Switch } from 'react-native';
+import React, { useState } from 'react';
+import { Button as ButonPaper, Provider as ProveedorPaper } from 'react-native-paper';
+import { Button as BotonElements } from 'react-native-elements';
 
 
-/* Zona 2: Es un tipo Main (zona de ejecución) */
+
+/* ZONA 2: Main */
 export default function App() {
-  const [contenido, setContenido] = useState('Hola Mundo');
-  const actualizaTexto = () => {  
-    setContenido('Estdo modificado');
-  }
+
+  const [modoOscuro, setModoOscuro] = useState(false);
+  const alternarModoOscuro = () => setModoOscuro(previo => !previo);
+
   return (
-    <View style={styles.container}> 
-      <Texto style={styles.amarillo} contenido={contenido}></Texto>
-      <Texto style={styles.rojo} contenido={contenido}></Texto>
-      <Texto style={styles.verde} contenido={contenido}></Texto>
-      <Button title='Presionar' onPress={actualizaTexto}></Button>
-      <StatusBar style="auto" />
-    </View>
+    <ProveedorPaper>
+      <ScrollView contentContainerStyle={styles.ScrollContainer}>
+        <View style={[styles.container, {backgroundColor: modoOscuro ? '#111' : '#fff'}]}> </View>
+        <View style={styles.container}>
+          <Text style={styles.title}> Modo de pantalla: {modoOscuro ? 'oscuro' : 'claro'} </Text>
+          <Switch value={modoOscuro} onValueChange={alternarModoOscuro} />
+        </View>
+      </ScrollView>
+    </ProveedorPaper>
   );
+
 }
 
-/* Zona 3: lugar de los estilos */
+/* ZONA 3: Estilos */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    alignItems: 'stretch',
+    paddingHorizontal: 16,
+    paddingBottom: 50,
+  }, title: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginVertical: 6,
+    color: '#000',
+  }, section: {
+    marginVertical: 15,
     alignItems: 'center',
-    justifyContent: 'space-evenly',
-    flexDirection: 'space-between',
-  },
-  text: {
-    color: 'black',
-    fontSize: 28,
-  }, 
-  rojo:{backgroundColor: 'red'},
-  amarillo:{backgroundColor: 'yellow'},
-  verde:{backgroundColor: 'green'},
-
+    width: '100%',
+  }
 });

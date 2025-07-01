@@ -1,83 +1,95 @@
-// Importamos los módulos necesarios de React y React Native
-import { use } from 'react';
-import React, { useRef } from 'react';
-import {
-  ScrollView, // Para hacer el contenido desplazable
-  StatusBar // Para acceder a la altura de la barra de estado
-  ,
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react'; //Importamos useeffect y useState
+import { ActivityIndicator, FlatList, SafeAreaView } from 'react-native'; //Importamos activityIndicator
 
-  StyleSheet, // Para crear estilos
-  Text
-} from 'react-native';
-
-// Importamos SafeAreaView y SafeAreaProvider para respetar las áreas seguras del dispositivo
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-
-// Componente principal de la aplicación
 const App = () => {
+  const [ loading, setLoading ] = useState(true);
+  const [ users, setUsers ] = useState([]);
 
-return (
+  useEffect(() => {
+    setTimeout(() => {
+      fetch('https://jsonplaceholder.typicode.com/users')
+      .then(resp => resp.json())
+      .then(data => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(err => { 
+      console.error('Error al cargar usuarios: ', err);
+      setLoading(false);
+      });
+    }, 2000);
+  }, []);
 
-  // SafeAreaProvider es necesario para que SafeAreaView funcione correctamente
-  <SafeAreaProvider>
-    {/* SafeAreaView asegura que el contenido no se superponga con la barra de estado, muescas, etc. */}
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* ScrollView permite que el contenido sea desplazable si excede el alto de la pantalla */}
-      <ScrollView horizontal={true} >
-      <ScrollView style={styles.scrollView}>
-        {/* Texto largo para probar el scroll */}
-        <Text style={styles.text}>
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-          Este es el texto que ocupara todo el espacio 
-          para que podamos ver el espacio que ocupe el scrollView.
-        </Text>
-      </ScrollView>
-      </ScrollView>
-    </SafeAreaView>
-  </SafeAreaProvider>
+
+const renderItem = ({ item }) => (
+  <View style={styles.card}>
+    <Text style={styles.name}> {item.name} </Text>
+    <Text style={styles.text}> {item.email} </Text>
+    <Text style={styles.text}> {item.address.city} </Text>
+    <Text style={styles.text}> {item.company.name} </Text>
+  </View>
 );
-}
-// Definimos los estilos con StyleSheet
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Si aun esta cargando, se muestra el indicador de carga */}
+      {loading ? (
+        <View style= {styles.loadingContainer}>
+          <ActivityIndicator
+            size= "large"
+            color= "#007bff" 
+          />
+          <Text style={styles.loadingText}> Cargando usuarios... </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={users}
+          keyExtractor= { item => item.id.toString() }
+          renderItem= { renderItem }
+          contentContainerStyle= { styles.list }
+          />
+      )}
+    </SafeAreaView>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,                             // Ocupa todo el alto disponible de la pantalla
-    paddingTop: StatusBar.currentHeight // Evita que el contenido se solape con la barra de estado
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  scrollView: {
-    backgroundColor: 'pink',            // Fondo rosa para visualizar el área del ScrollView
+  loadingContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12, 
+    fontSize: 16,
+    color: '#333',
+  },
+  list: {
+    paddingBottom: 20,
+  },
+  card: {
+    backgroundColor: '#f0f0f0',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10,
+    elevation: 2,
+  },
+  name : {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   text: {
-    fontSize: 42,                        // Texto grande
-    padding: 12,                         // Espaciado interno
+    fontSize: 14,
+    color: '#333',
+    marginTop: 2,
   },
 });
 
-// Exportamos el componente para que pueda ser usado por la app
 export default App;
